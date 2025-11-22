@@ -7,7 +7,8 @@
 
 @if (eventItem is null)
 {
-    <p>Event not found.</p>
+    <p role="alert">Event not found. Redirecting...</p>
+    navManager.NavigateTo("/events");
 }
 else
 {
@@ -22,7 +23,7 @@ else
 @code {
     [Parameter] public int id { get; set; }
     private Event? eventItem;
-
+    [Inject] private NavigationManager navManager { get; set; } = default!;
     protected override void OnParametersSet()
     {
         eventItem = EventService.GetEventById(id);

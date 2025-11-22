@@ -12,12 +12,11 @@
 }
 else
 {
-    @foreach (var e in events)
-    {
+    <Virtualize Items="@events" Context="e">
         <EventCard Event="e" OnViewDetails="NavigateToDetails" />
-    }
+    </Virtualize>
 
-}
+}1
 
 @code {
     private List<Event>? events;
