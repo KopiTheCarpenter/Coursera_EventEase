@@ -1,0 +1,25 @@
+@using EventEase.Models
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Event.Name</h5>
+        <p class="card-text">
+            <strong>Date:</strong> @Event.Date.ToString("yyyy-MM-dd")<br />
+            <strong>Location:</strong> @Event.Location
+        </p>
+
+        <div class="form-group">
+            <label>Edit name:</label>
+            <input class="form-control" @bind="Event.Name" />
+        </div>
+
+        <button class="btn btn-primary" @onclick="() => OnViewDetails?.Invoke(Event.Id)">
+            View details
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Event Event { get; set; } = new();
+    [Parameter] public Action<int>? OnViewDetails { get; set; }
+}

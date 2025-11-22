@@ -1,0 +1,36 @@
+@page "/events"
+@using EventEase.Models
+@using EventEase.Services
+@inject EventService EventService
+@using EventEase.Components
+
+<h3>Events</h3>
+
+@if (events is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @foreach (var e in events)
+    {
+        <EventCard Event="e" OnViewDetails="NavigateToDetails" />
+    }
+
+}
+
+@code {
+    private List<Event>? events;
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+
+    private void NavigateToDetails(int id)
+    {
+        navManager.NavigateTo($"/events/{id}");
+    }
+
+    [Inject] private NavigationManager navManager { get; set; } = default!;
+}

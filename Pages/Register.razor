@@ -1,0 +1,54 @@
+@page "/register"
+@page "/register/{eventId:int}"
+@using EventEase.Services
+@using EventEase.Models
+@inject EventService EventService
+
+<h3>Registration</h3>
+
+@if (eventId.HasValue)
+{
+    <p>Registering for: <strong>@eventItem?.Name</strong></p>
+}
+
+<EditForm Model="@formData" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Name</label>
+        <InputText class="form-control" @bind-Value="formData.AttendeeName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText class="form-control" @bind-Value="formData.Email" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+    <NavLink class="btn btn-secondary" href="/events">Back to events</NavLink>
+</EditForm>
+
+@code {
+    [Parameter] public int? eventId { get; set; }
+    private Event? eventItem;
+
+    private RegistrationForm formData = new();
+
+    protected override void OnParametersSet()
+    {
+        eventItem = eventId is not null ? EventService.GetEventById(eventId.Value) : null;
+    }
+
+    private void HandleSubmit()
+    {
+        // Mock submit: log to console
+        Console.WriteLine($"Registered {formData.AttendeeName} for event {eventItem?.Name ?? "(none)"}");
+    }
+
+    public class RegistrationForm
+    {
+        public string AttendeeName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
+}

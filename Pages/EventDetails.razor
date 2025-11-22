@@ -1,0 +1,30 @@
+@page "/events/{id:int}"
+@using EventEase.Models
+@using EventEase.Services
+@inject EventService EventService
+
+<h3>Event details</h3>
+
+@if (eventItem is null)
+{
+    <p>Event not found.</p>
+}
+else
+{
+    <p><strong>Name:</strong> @eventItem.Name</p>
+    <p><strong>Date:</strong> @eventItem.Date.ToString("yyyy-MM-dd")</p>
+    <p><strong>Location:</strong> @eventItem.Location</p>
+
+    <NavLink class="btn btn-secondary" href="/events">Back to events</NavLink>
+    <NavLink class="btn btn-primary" href="@($"/register/{eventItem.Id}")">Register</NavLink>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Event? eventItem;
+
+    protected override void OnParametersSet()
+    {
+        eventItem = EventService.GetEventById(id);
+    }
+}
