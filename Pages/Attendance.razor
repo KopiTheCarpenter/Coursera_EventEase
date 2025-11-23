@@ -1,0 +1,25 @@
+@page "/attendance"
+@using EventEase.Models
+@using EventEase.Services
+@inject UserSession userSession
+@inject EventService eventService
+
+<h3>Attendance Tracker</h3>
+
+@if (userSession.Registrations.Count == 0)
+{
+    <p>No registrations yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var reg in userSession.Registrations)
+        {
+            var ev = eventService.GetEventById(reg.EventId);
+            if (ev != null)
+            {
+                <li>@reg.Name (@reg.Email) registered for @ev.Name on @ev.Date.ToShortDateString() - @ev.Location</li>
+            }
+        }
+    </ul>
+}

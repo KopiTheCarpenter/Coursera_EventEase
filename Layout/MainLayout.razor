@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using EventEase.Models
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,7 +7,12 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <span>
+                @(userSession.Registrations.LastOrDefault() != null
+                                ? $"Last registrator {userSession.Registrations.LastOrDefault()?.Name}"
+                                : "No Registration yet")
+            </span>
+
         </div>
 
         <article class="content px-4">
@@ -14,3 +20,8 @@
         </article>
     </main>
 </div>
+
+
+@code {
+    [Inject] private UserSession userSession { get; set; } = default!;
+}

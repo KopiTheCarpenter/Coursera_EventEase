@@ -3,6 +3,8 @@
 @using EventEase.Services
 @using EventEase.Models
 @inject EventService EventService
+@inject UserSession userSession
+@inject NavigationManager Navigation
 
 <h3>Registration</h3>
 
@@ -10,19 +12,31 @@
 {
     <p>Registering for: <strong>@eventItem?.Name</strong></p>
 }
+else{
+    <div class="mb-3">
+        <label>Select Event</label>
+        <InputSelect class="form-control" @bind-Value="registration.EventId">
+            <option selected="selected" value="0">-- choose an event --</option>
+            @foreach (var ev in EventService.GetEvents())
+            {
+                <option value="@ev.Id">@ev.Name (@ev.Date.ToShortDateString())</option>
+            }
+        </InputSelect>
+    </div>
+}
 
-<EditForm Model="@formData" OnValidSubmit="HandleSubmit">
+<EditForm Model="@registration" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
         <label>Name</label>
-        <InputText class="form-control" @bind-Value="formData.AttendeeName" />
+        <InputText class="form-control" @bind-Value="registration.Name" />
     </div>
 
     <div class="mb-3">
         <label>Email</label>
-        <InputText class="form-control" @bind-Value="formData.Email" />
+        <InputText class="form-control" @bind-Value="registration.Email" />
     </div>
 
     <button class="btn btn-primary" type="submit">Submit</button>
@@ -33,22 +47,28 @@
     [Parameter] public int? eventId { get; set; }
     private Event? eventItem;
 
-    private RegistrationForm formData = new();
+    private Registration registration = new();
 
     protected override void OnParametersSet()
     {
-        eventItem = eventId is not null ? EventService.GetEventById(eventId.Value) : null;
+        if (eventId.HasValue)
+        {
+            eventItem = EventService.GetEventById(eventId.Value);
+            registration.EventId = eventId.Value;
+        }
     }
 
     private void HandleSubmit()
     {
-        // Mock submit: log to console
-        Console.WriteLine($"Registered {formData.AttendeeName} for event {eventItem?.Name ?? "(none)"}");
+        // Add a new registration record
+        userSession.Registrations.Add(new Registration
+        {
+            Name = registration.Name,
+            Email = registration.Email,
+            EventId = registration.EventId
+        });
+
+        Navigation.NavigateTo("/attendance");
     }
 
-    public class RegistrationForm
-    {
-        public string AttendeeName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-    }
 }
